@@ -8,7 +8,7 @@
 #include <avr/io.h>
 #include <avr/delay.h>
 
-#define  F_CPU 16000000 // sets the Clockspeed of an arduino for all assets (The same for all Arduinos)
+#define  F_CPU 16000000 // sets the Clock speed of an Arduino for all assets (The same for all Arduinos)
 
 
 int main(void)
