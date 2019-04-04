@@ -10,12 +10,13 @@
 
 #define  F_CPU 16000000 // sets the Clock speed of an Arduino for all assets (The same for all Arduinos)
 
-
 int main(void)
 {
     /* Replace with your application code */
+	
     while (1) 
     {
+		
     }
 }
 
