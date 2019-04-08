@@ -13,7 +13,9 @@
 
 #define ADC_Start_Conversion ADCSRA |= (1<<ADSC);
 
-void ADC_Setup_single_conversion(){
+volatile int setpin;
+
+void Setup_ADC_single_conversion(){
 	ADCSRA |= (1<<ADEN); // Enable ADC converter
 	ADMUX |= (1 << REFS0);	// Vcc Reference with external capacitor at AREF (standard for arduino). Make sure the circuit contains this.
 	ADCSRA |= (1<<ADPS2) | (1<<ADPS1) | (1<<ADPS0); // Prescaler = 128
@@ -26,12 +28,21 @@ void ADC_set_multiplexer_pin(int pin){
 		case 3 : ADMUX &= ~(1<<MUX3) & ~(1<<MUX2); ADMUX |= (1<<MUX1) | (1<<MUX0);  DIDR0 &= ~(1<<ADC3D); break;
 		case 4 : ADMUX &= ~(1<<MUX3) & ~(1<<MUX1) & ~(1<<MUX0); ADMUX |= (1<<MUX2); DIDR0 &= ~(1<<ADC4D); break;
 		case 5 : ADMUX &= ~(1<<MUX3) & ~(1<<MUX1); ADMUX |= (1<<MUX2) |(1<<MUX0);   DIDR0 &= ~(1<<ADC5D); break;}
+		setpin = pin;
 }
-float VoltageRead(int pin){
+float VoltageRead_pin(int pin){
+	setpin = pin;
 	ADC_set_multiplexer_pin(pin);
 	ADC_Start_Conversion;
-	while(ADCSRA & (1<<ADSC)){}; // Waits for the 
+	while(ADCSRA & (1<<ADSC)); // Waits for the 
 	DIDR0 |= (1<<pin);
+	double Voltage = (ADC * 5)/1024;
+	return Voltage;
+}
+float VoltageRead(){
+	ADC_Start_Conversion;
+	while(ADCSRA & (1<<ADSC)); // Waits for the
+	DIDR0 |= (1<<setpin);
 	double Voltage = (ADC * 5)/1024;
 	return Voltage;
 }
