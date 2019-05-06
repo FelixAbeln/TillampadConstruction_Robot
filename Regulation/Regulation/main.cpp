@@ -32,83 +32,44 @@ int main(void)
 	DDRB &= ~(1 << DDB4);
 	PCICR |= (1 << PCIE0); // Enables the disable/enable interrupt
 	PCMSK0 |= (1 << PCINT4); //Enables the enable pin in the interupt mask
-	PCICR |= (1 << PCIE2); // Enables the pin interrupt 2 vector
-	PCMSK2 =  0b01111100; // Enables the interrupt pins in the interrupt mask
 	sei();
 	
 	Setup_L298N_PWM();
 	Motor1.Attach(1);
 	Motor1.SetDirection(1);
-	Motor1.Calibrate(.5);
+	Motor1.Calibrate(.2);
 	Motor2.Attach(2);
-	Motor2.Calibrate(.5);
+	Motor2.Calibrate(.2);
 	Motor2.SetDirection(1);
 	
 	OnButton();
 	
 	while (1)
 	{	
+		if (!isoff)
+		{
+			if (PIND & (1 << PIND3))
+			{
+				Motor1.Off();
+				Motor2.FullSpeed();
+			}
+			else if (PIND & (1 << PIND5))
+			{
+				Motor1.FullSpeed();
+				Motor2.Off();
+			}
+		}
+		else
+		{
+			Motor1.Off();
+			Motor2.Off();
+		}
 	}
-}
-
-ISR(PCINT2_vect)
-{
-	if (isoff == 1){return;}
-	if (PIND & (1 << DDD7))
-	{
-		Motor1.SetDirection(2);
-		Motor1.FullSpeed();
-		Motor2.SetDirection(1);
-		Motor2.FullSpeed();
-		WaitForMiddleSensor();
-		Motor1.SetDirection(1);
-		return;
-	}
-	else if (PINB & (1 << DDB0))
-	{
-		Motor1.SetDirection(1);
-		Motor1.FullSpeed();
-		Motor2.SetDirection(2);
-		Motor2.FullSpeed();
-		WaitForMiddleSensor();
-		Motor1.SetDirection(1);
-		return;
-	}
-		
-	int Sensor_Output = CheckIrSensors();
-	
-	switch (Sensor_Output)
-	{
-		case 0b00100 : Error = 0; break;
-		case 0b01100 : Error = 1; break;
-		case 0b01000 : Error = 2; break;
-		case 0b11000 : Error = 3; break;
-		case 0b10000 : Error = 4; break;
-		case 0b00110 : Error = -1; break;
-		case 0b00010 : Error = -2; break;
-		case 0b00011 : Error = -3; break;
-		case 0b00001 : Error = -4; break;
-	}
-	
-	float SpeedPercent = GetSpeedPercent(Error);
-	
-	if (Error < 0)
-	{
-		Motor2.SetSpeedPercent(SpeedPercent);
-		Motor1.SetSpeedPercent(1);
-	}
-	else
-	{
-		Motor2.SetSpeedPercent(1);
-		Motor1.SetSpeedPercent(SpeedPercent);
-	}
-	_delay_ms(500);
 }
 ISR(PCINT0_vect)
 {
 	OnButton();	
 }
-
 void OnButton()
 {
 	if (CheckOnButton())
@@ -122,11 +83,9 @@ void OnButton()
 	{
 		PORTB &= ~(1 << PORTB5);
 		isoff = 1;
-		Motor2.Off();
-		Motor1.Off();
 	}
 }
 void WaitForMiddleSensor()
 {
-	while (!(PINB & (1 << DDB4))){}
+	while (!(PIND & (1 << DDD4))){}
 }

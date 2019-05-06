@@ -8,18 +8,20 @@
 #define F_CPU 16000000
 #include <avr/io.h>
 #include <util/delay.h>
-
+#include "Relay.h"
+#include "Servo.h"
 
 int main(void)
 {
-    /* Replace with your application code */
-	DDRE |= (1 << DDE4);
+	Relay Magnet;
+	Magnet.Attatch(0, 'A');
+	
+	Servo Lift;
+	Lift.Attatch(5, 'B');
+	
     while (1) 
     {
-		PORTE |= (1 << DDE4);
-		_delay_ms(1000);
-		PORTE &= ~(1 << DDE4);
-		_delay_ms(1000);
+		
     }
 }
 
