@@ -16,11 +16,11 @@
 //----------Custom Headers---------------//
 #include "Regulation.h"
 #include "L298N.h"
-#include "SensorHeader.h"
 
 Ln298n_Motor Motor1, Motor2; 
 int isoff;
 void OnButton();
+int CheckOnButton();
 void WaitForMiddleSensor();
 int Error = 0;
 
@@ -84,4 +84,9 @@ void OnButton()
 		PORTB &= ~(1 << PORTB5);
 		isoff = 1;
 	}
+}
+int CheckOnButton()
+{
+	if (PINB & (1 << PINB4)) {return 1;}
+	else {return 0;}
 }
