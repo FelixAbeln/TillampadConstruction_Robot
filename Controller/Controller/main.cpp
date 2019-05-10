@@ -10,6 +10,7 @@
 #include <util/delay.h>
 #include "Relay.h"
 #include "Servo.h"
+#include "LDR.h"
 
 int main(void)
 {
@@ -17,11 +18,22 @@ int main(void)
 	Magnet.Attatch(0, 'A');
 	
 	Servo Lift;
-	Lift.Attatch(5, 'B');
+	Lift.Attatch(4, 'H');
+	Lift.SetPulseWidth(0.00199, 0.00092);
+	
+	LightDependentResistor BallSensor;
+	BallSensor.Attatch(0);
 	
     while (1) 
     {
-		
+		if (BallSensor.Read() < 0.9)
+		{
+			Lift.MaxForward();
+		}	
+		else 
+		{
+			Lift.Off();
+		}
     }
 }
 

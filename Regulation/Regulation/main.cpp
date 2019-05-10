@@ -37,9 +37,9 @@ int main(void)
 	Setup_L298N_PWM();
 	Motor1.Attach(1);
 	Motor1.SetDirection(1);
-	Motor1.Calibrate(.2);
+	Motor1.Calibrate(.3);
 	Motor2.Attach(2);
-	Motor2.Calibrate(.2);
+	Motor2.Calibrate(.3);
 	Motor2.SetDirection(1);
 	
 	OnButton();
@@ -84,8 +84,4 @@ void OnButton()
 		PORTB &= ~(1 << PORTB5);
 		isoff = 1;
 	}
-}
-void WaitForMiddleSensor()
-{
-	while (!(PIND & (1 << DDD4))){}
 }
