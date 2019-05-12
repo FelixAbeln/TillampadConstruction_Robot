@@ -14,7 +14,6 @@
 #include <stdlib.h>
 
 //----------Custom Headers---------------//
-#include "Regulation.h"
 #include "L298N.h"
 
 Ln298n_Motor Motor1, Motor2; 
@@ -37,9 +36,9 @@ int main(void)
 	Setup_L298N_PWM();
 	Motor1.Attach(1);
 	Motor1.SetDirection(1);
-	Motor1.Calibrate(.3);
+	Motor1.Calibrate(.2);
 	Motor2.Attach(2);
-	Motor2.Calibrate(.3);
+	Motor2.Calibrate(.2);
 	Motor2.SetDirection(1);
 	
 	OnButton();
@@ -57,6 +56,11 @@ int main(void)
 			{
 				Motor1.FullSpeed();
 				Motor2.Off();
+			}
+			else if (PIND & (1 << PIND4))
+			{
+				Motor1.FullSpeed();
+				Motor2.FullSpeed();
 			}
 		}
 		else
@@ -76,8 +80,6 @@ void OnButton()
 	{
 		PORTB |= (1 << PORTB5);
 		isoff = 0;
-		Motor2.FullSpeed();
-		Motor1.FullSpeed();
 	}
 	else
 	{
