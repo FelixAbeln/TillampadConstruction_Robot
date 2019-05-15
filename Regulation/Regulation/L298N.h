@@ -1,5 +1,5 @@
 
-#define SignalFrequency_Hz 50.0
+#define SignalFrequency_Hz 50
 
 
 void Setup_L298N_PWM()
@@ -35,7 +35,7 @@ void Setup_L298N_PWM()
 	  {
 		  case 0 : PORTC &= ~(1 << Outpin1); PORTC &= ~(1 << Outpin2); break;
 		  case 1 : PORTC |= (1 << Outpin1); PORTC &= ~(1 << Outpin2); break;
-		  case 2 : PORTC &= ~(1 << Outpin2); PORTC |= (1 << Outpin2); break;
+		  case 2 : PORTC &= ~(1 << Outpin1); PORTC |= (1 << Outpin2); break;
 	  }
   }
   void SetPWMCount(int PWMCount)

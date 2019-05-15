@@ -5,7 +5,7 @@
  * Author : Felix Abeln
  */ 
 
-#define F_CPU 12000000 
+#define F_CPU 16000000 
 
 //----------AVR Gnu Header---------------//
 #include <avr/io.h>
@@ -21,7 +21,15 @@ int isoff;
 void OnButton();
 int CheckOnButton();
 void WaitForMiddleSensor();
-int Error = 0;
+void WaitStop(void);
+void Bandgape(void);
+
+float speed_lower = 0;
+float speed_higher = .5;
+int stop_flag = 0;
+int Counter = 0;
+	
+
 
 int main(void)
 {
@@ -35,11 +43,11 @@ int main(void)
 	
 	Setup_L298N_PWM();
 	Motor1.Attach(1);
-	Motor1.SetDirection(1);
-	Motor1.Calibrate(.2);
+	Motor1.SetDirection(2);
+	Motor1.Calibrate(.40);
 	Motor2.Attach(2);
-	Motor2.Calibrate(.2);
-	Motor2.SetDirection(1);
+	Motor2.Calibrate(.5);
+	Motor2.SetDirection(2);
 	
 	OnButton();
 	
@@ -47,20 +55,38 @@ int main(void)
 	{	
 		if (!isoff)
 		{
-			if (PIND & (1 << PIND3))
+			if ((PINC & (1 << PINC4)) || (PINC & (1 << PINC5)))
 			{
-				Motor1.Off();
-				Motor2.FullSpeed();
+				stop_flag = 1;
 			}
-			else if (PIND & (1 << PIND5))
+			
+			if (stop_flag)
 			{
-				Motor1.FullSpeed();
-				Motor2.Off();
+				switch (Counter)
+				{
+					case 0: Bandgape(); break;
+					case 3: Motor1.Off(); Motor2.Off();_delay_ms(1000);
+					default: _delay_ms(500); break; 
+				}
+				
+				stop_flag = 0;
+				Counter ++;
 			}
-			else if (PIND & (1 << PIND4))
+// 			if (PIND & (1 << PIND6) && !stop_flag)
+// 			{
+// 				Motor1.SetSpeedPercent(1);
+// 				Motor2.SetSpeedPercent(1);
+// 				
+// 			}
+			if (PIND & (1 << PIND4) && !stop_flag)
 			{
-				Motor1.FullSpeed();
-				Motor2.FullSpeed();
+				Motor1.SetSpeedPercent(speed_higher);
+				Motor2.SetSpeedPercent(speed_lower);
+			}
+			else if (PIND & (1 << PIND2) && !stop_flag)
+			{
+				Motor1.SetSpeedPercent(speed_lower);
+				Motor2.SetSpeedPercent(speed_higher);
 			}
 		}
 		else
@@ -91,4 +117,50 @@ int CheckOnButton()
 {
 	if (PINB & (1 << PINB4)) {return 1;}
 	else {return 0;}
+}
+void WaitStop(void)
+{
+	Motor1.Off();
+	Motor2.Off();
+	_delay_ms(1000);
+}
+void Bandgape(void)
+{
+	WaitStop();
+	while (!(PINC & (1 << PINC4)))
+	{
+		Motor2.Off();
+		Motor1.SetSpeedPercent(speed_higher);
+	}
+	while (!(PINC & (1 << PINC5)))
+	{
+		Motor1.Off();
+		Motor2.SetSpeedPercent(speed_higher);
+	}
+	WaitStop();
+	Motor2.SetSpeedPercent(speed_higher);
+	Motor1.SetSpeedPercent(speed_higher);
+	_delay_ms(500);
+	
+	int sensor = 0;
+	while (!(PIND & (1 << PIND6)))
+	{
+		if (PINC & (1 << PINC4)){sensor = 1;}
+		else if (PINC & (1 << PINC5)){sensor = 2;}
+			
+		if (sensor == 1)
+		{
+			Motor1.Off();
+			Motor2.SetSpeedPercent(speed_higher);
+		}
+		else if (sensor == 2)
+		{
+			Motor2.Off();
+			Motor1.SetSpeedPercent(speed_higher);
+		}
+		
+	}
+	Motor1.Off();
+	Motor2.Off();
+	
 }

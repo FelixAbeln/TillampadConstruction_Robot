@@ -32,19 +32,49 @@ int main(void)
 	
 	int Lift_is_upp = 0;
 	int counter = 0;
+	int On_stop_line = 0;
 	
 	DDRA |= (1 << DDA1); // The Trigger pin on the second Arduino
 	PORTA |= (1 << PA1); // Turn on the Linefollower_controller
 	
     while (1) 
     {
-		if (BallSensor.Read() < 0.9 && !Lift_is_upp)
+		/* Checks if the ball is inplace for the lift
+		*/
+		if (BallSensor.Read() < .9 && !Lift_is_upp)
 		{
 			_delay_ms(1000);
 			Lift.MaxForward();
-			_delay_ms(1000);
+			_delay_ms(3000);
 			Lift.Off();
 			Lift_is_upp = 1;
+		}
+		
+		/* Checks for the stop markings on the floor and takes acording actions
+		*/
+		if (!On_stop_line)
+		{
+			if (RightSensor.Value() && LeftSensor.Value())
+			{
+				if (counter == 1)
+				{
+					counter ++;
+					// Do nothing
+				}
+				if (counter == 2)
+				{
+					counter ++;
+					PORTA &= ~(1 << PA1); // Off with regulator
+					Magnet.RelayOff();	
+				}
+			}
+		}
+		else
+		{
+			if (!RightSensor.Value() && !LeftSensor.Value())
+			{
+				On_stop_line = 0;
+			}
 		}
     }
 }
