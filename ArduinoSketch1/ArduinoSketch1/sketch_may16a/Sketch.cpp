@@ -29,6 +29,7 @@ void setup() {
   pinMode(6, OUTPUT);
   pinMode(12, INPUT);
   digitalWrite(6, HIGH);
+  Lift.write(88);
 }
 
 void loop()
@@ -42,8 +43,8 @@ void loop()
 		Serial.println("Ball Found");
 		_delay_ms(500);
 		Lift.write(180);
-		_delay_ms(1000);
-		Lift.write(90);
+		_delay_ms(4000);
+		Lift.detach();
 		LiftIsUp = true;
 	}
 	_delay_ms(500);
