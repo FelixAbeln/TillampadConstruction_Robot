@@ -43,7 +43,7 @@ void loop()
 		Serial.println("Ball Found");
 		_delay_ms(500);
 		Lift.write(180);
-		_delay_ms(4000);
+		_delay_ms(2800);
 		Lift.detach();
 		LiftIsUp = true;
 	}

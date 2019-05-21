@@ -29,7 +29,7 @@ void Turn90Degrees_T(void);
 
 
 float speed_lower = 0;
-float speed_higher = .4;
+float speed_higher = .35;
 int stop_flag = 0;
 int Counter = 0;
 	
@@ -183,14 +183,14 @@ void Turn90Degrees_corner(void)
 	while (!(PINC & (1 << PINC5)))
 	{
 		Motor1.Off();
-		Motor2.SetSpeedPercent(speed_higher);
+		Motor2.SetSpeedPercent(.3);
 	}
 	WaitStop();
 	
 	while (!(PIND & (1 << PIND6)))
 	{
 		Motor1.Off();
-		Motor2.SetSpeedPercent(speed_higher);
+		Motor2.SetSpeedPercent(.3);
 	}
 }
 void Turn90Degrees_T(void)
@@ -198,7 +198,7 @@ void Turn90Degrees_T(void)
 	WaitStop();
 	
 	Motor1.Off();
-	Motor2.SetSpeedPercent(speed_higher);
+	Motor2.SetSpeedPercent(.3);
 	_delay_ms(1000);
 	
 	WaitStop();
@@ -206,7 +206,7 @@ void Turn90Degrees_T(void)
 	while (!(PIND & (1 << PIND6)))
 	{
 		Motor1.Off();
-		Motor2.SetSpeedPercent(speed_higher);
+		Motor2.SetSpeedPercent(.3);
 	}
 	
 }
