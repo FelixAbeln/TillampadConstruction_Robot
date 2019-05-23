@@ -15,7 +15,7 @@ void StopServo(void)
 }
 bool SensorOn(void)
 {
-	if (PIND & (1 << PIND5))
+	if (PIND & (1 << PIND2))
 	{
 		return false;
 	}
@@ -43,7 +43,7 @@ void loop()
 		Serial.println("Ball Found");
 		_delay_ms(500);
 		Lift.write(180);
-		_delay_ms(2800);
+		_delay_ms(4000);
 		Lift.detach();
 		LiftIsUp = true;
 	}
